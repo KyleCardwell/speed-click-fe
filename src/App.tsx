@@ -36,19 +36,36 @@ const boxes: gameBox[] = [
 ];
 
 
+
+const createBoxes = (quantity: number): gameBox[] => {
+  const boxes: gameBox[] = []
+
+  for (let i = 0; i < quantity ** 2; i++) {
+    boxes.push({clickToWin: false})
+  }
+  return boxes
+}
+
 function App() {
-	const [speedBoxes, setSpeedBoxes] = useState<gameBox[]>(boxes);
+
+  const boxQuantity: number = 5
+
+	const [speedBoxes, setSpeedBoxes] = useState<gameBox[]>(createBoxes(boxQuantity));
   const [checkedBoxes, setCheckedBoxes] = useState<Set<number>>()
 
-  const boxesToCheck = new Set<number>()
+  const generateRandom = () => {
+
+    const randomList = new Set<number>()
+
+    while (randomList.size < 8) {
+      const num: number = Math.floor(25 * Math.random())
+      randomList.add(num)
+    }
+    return randomList
+  }
 
   useEffect(() => {
-    while (boxesToCheck.size < 8) {
-      const num: number = Math.floor(25 * Math.random())
-      boxesToCheck.add(num)
-    }
-  
-    setCheckedBoxes(boxesToCheck)
+    setCheckedBoxes(generateRandom())
 
   }, [])
 
@@ -61,6 +78,21 @@ function App() {
     }))
   }, [checkedBoxes])
 
+  useEffect(() => {
+    if (speedBoxes.every(function(speedBox: gameBox): boolean {
+      if (!speedBox.clickToWin) {
+        return true
+      }
+      return false
+    }) ) {
+      const timer = setTimeout(() => {
+        
+        setCheckedBoxes(generateRandom())
+      }, 150)
+      return () => clearTimeout(timer)
+    }
+  }, [speedBoxes])
+
   const handleClick = (num: number) => {
     setSpeedBoxes(speedBoxes.map(function(speedBox: gameBox, index: number): gameBox {
       if (num === index) {
@@ -70,10 +102,7 @@ function App() {
     }))
   }
 
-
-
-
-
+  
 	return (
 		<div className="App">
 			<div className="gameContainer">
