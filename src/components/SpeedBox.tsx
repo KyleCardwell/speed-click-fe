@@ -9,6 +9,7 @@ function SpeedBox(props: any) {
 
   const handleClick = () => {
     props.toggleBox(props.num)
+    // console.log('clicked', props.num)
   }
 
   return (
