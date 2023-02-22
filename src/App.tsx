@@ -1,108 +1,87 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, MouseEvent, EventHandler } from "react";
 import reactLogo from "./assets/react.svg";
 import "./App.css";
 import SpeedBox from "./components/SpeedBox";
 
 interface gameBox {
-  clickToWin: boolean
+	clickToWin: boolean;
 }
-
-const boxes: gameBox[] = [
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-	{ clickToWin: false },
-];
-
-
 
 const createBoxes = (quantity: number): gameBox[] => {
-  const boxes: gameBox[] = []
+	const boxes: gameBox[] = [];
 
-  for (let i = 0; i < quantity ** 2; i++) {
-    boxes.push({clickToWin: false})
-  }
-  return boxes
-}
+	for (let i = 0; i < quantity ** 2; i++) {
+		boxes.push({ clickToWin: false });
+	}
+	return boxes;
+};
 
 function App() {
+	const boxQuantity: number = 6;
 
-  const boxQuantity: number = 5
+	const [speedBoxes, setSpeedBoxes] = useState<gameBox[]>(
+		createBoxes(boxQuantity)
+	);
+	const [checkedBoxes, setCheckedBoxes] = useState<Set<number>>();
 
-	const [speedBoxes, setSpeedBoxes] = useState<gameBox[]>(createBoxes(boxQuantity));
-  const [checkedBoxes, setCheckedBoxes] = useState<Set<number>>()
+	const generateRandom = () => {
+		const randomList = new Set<number>();
 
-  const generateRandom = () => {
+		while (randomList.size < 12) {
+			const num: number = Math.floor(boxQuantity ** 2 * Math.random());
+			randomList.add(num);
+		}
+		return randomList;
+	};
 
-    const randomList = new Set<number>()
+	useEffect(() => {
+		setCheckedBoxes(generateRandom());
+	}, []);
 
-    while (randomList.size < 8) {
-      const num: number = Math.floor(25 * Math.random())
-      randomList.add(num)
-    }
-    return randomList
-  }
+	useEffect(() => {
+		setSpeedBoxes(
+			speedBoxes.map(function (speedBox: gameBox, index: number): gameBox {
+				if (checkedBoxes?.has(index)) {
+					speedBox.clickToWin = true;
+				}
+				return speedBox;
+			})
+		);
+	}, [checkedBoxes]);
 
-  useEffect(() => {
-    setCheckedBoxes(generateRandom())
+	useEffect(() => {
+		if (
+			speedBoxes.every(function (speedBox: gameBox): boolean {
+				if (!speedBox.clickToWin) {
+					return true;
+				}
+				return false;
+			})
+		) {
+			const timer = setTimeout(() => {
+				setCheckedBoxes(generateRandom());
+			}, 150);
+			return () => clearTimeout(timer);
+		}
+	}, [speedBoxes]);
 
-  }, [])
+	const handleClick = (e: MouseEvent, num: number) => {
+		if (checkedBoxes?.has(num)) {
+			setSpeedBoxes(
+				speedBoxes.map(function (speedBox: gameBox, index: number): gameBox {
+					if (num === index) {
+						speedBox.clickToWin = !speedBox.clickToWin;
+						checkedBoxes.delete(num);
+					}
+					return speedBox;
+				})
+			);
+		} else {
+			alert("oops, don't click the blues");
+			return;
+		}
+	};
 
-  useEffect(() => {
-    setSpeedBoxes(speedBoxes.map(function(speedBox: gameBox, index: number): gameBox {
-      if (checkedBoxes?.has(index)) {
-        speedBox.clickToWin = true
-      }
-      return speedBox
-    }))
-  }, [checkedBoxes])
-
-  useEffect(() => {
-    if (speedBoxes.every(function(speedBox: gameBox): boolean {
-      if (!speedBox.clickToWin) {
-        return true
-      }
-      return false
-    }) ) {
-      const timer = setTimeout(() => {
-        
-        setCheckedBoxes(generateRandom())
-      }, 150)
-      return () => clearTimeout(timer)
-    }
-  }, [speedBoxes])
-
-  const handleClick = (num: number) => {
-    setSpeedBoxes(speedBoxes.map(function(speedBox: gameBox, index: number): gameBox {
-      if (num === index) {
-        speedBox.clickToWin = !speedBox.clickToWin
-      }
-      return speedBox
-    }))
-  }
-
-  
 	return (
 		<div className="App">
 			<div className="gameContainer">
@@ -114,7 +93,7 @@ function App() {
 								clickToWin={box.clickToWin}
 								toggleBox={handleClick}
 								num={index}
-                checkedBoxes={checkedBoxes}
+								checkedBoxes={checkedBoxes}
 								key={index}
 							/>
 						);

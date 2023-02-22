@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, MouseEvent } from 'react';
 
 function SpeedBox(props: any) {
 
@@ -7,8 +7,8 @@ function SpeedBox(props: any) {
   },[])
 
 
-  const handleClick = () => {
-    props.toggleBox(props.num)
+  const handleClick = (e: MouseEvent) => {
+    props.toggleBox(e, props.num)
     // console.log('clicked', props.num)
   }
 
