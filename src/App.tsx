@@ -2,16 +2,18 @@ import { useEffect, useState, MouseEvent, EventHandler } from "react";
 import reactLogo from "./assets/react.svg";
 import "./App.css";
 import SpeedBox from "./components/SpeedBox";
+import GameGrid from "./components/GameGrid";
 
-interface gameBox {
+export interface gameBox {
 	clickToWin: boolean;
+  number: number;
 }
 
 const createBoxes = (quantity: number): gameBox[] => {
 	const boxes: gameBox[] = [];
 
 	for (let i = 0; i < quantity ** 2; i++) {
-		boxes.push({ clickToWin: false });
+		boxes.push({ clickToWin: false, number: i });
 	}
 	return boxes;
 };
@@ -27,7 +29,7 @@ function App() {
 	const generateRandom = () => {
 		const randomList = new Set<number>();
 
-		while (randomList.size < 12) {
+		while (randomList.size < Math.floor((boxQuantity ** 2)/3)) {
 			const num: number = Math.floor(boxQuantity ** 2 * Math.random());
 			randomList.add(num);
 		}
@@ -60,12 +62,13 @@ function App() {
 		) {
 			const timer = setTimeout(() => {
 				setCheckedBoxes(generateRandom());
-			}, 150);
+			}, 200);
 			return () => clearTimeout(timer);
 		}
 	}, [speedBoxes]);
 
 	const handleClick = (e: MouseEvent, num: number) => {
+    console.log('clicked ', num)
 		if (checkedBoxes?.has(num)) {
 			setSpeedBoxes(
 				speedBoxes.map(function (speedBox: gameBox, index: number): gameBox {
@@ -85,7 +88,13 @@ function App() {
 	return (
 		<div className="App">
 			<div className="gameContainer">
-				<div className="gameBoard">
+        <GameGrid
+          boxQuantity={boxQuantity}
+          speedBoxes={speedBoxes}
+          toggleBox={handleClick}
+          checkedBoxes={checkedBoxes}
+        />
+				{/* <div className="gameBoard">
 					{speedBoxes.map((box, index) => {
 						// console.log("box", box);
 						return (
@@ -98,7 +107,7 @@ function App() {
 							/>
 						);
 					})}
-				</div>
+				</div> */}
 			</div>
 		</div>
 	);

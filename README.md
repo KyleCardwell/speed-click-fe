@@ -8,3 +8,4 @@
 - some squares have symbols (all green) and only certain symbols can be tapped
 - all symbols of one design have to be tapped before other symbols can be tapped
 - "memory" game - show player all green squares, then turn all squares red.  only tap where there were green squares
+- shifty - remaining squares move around after each click
